@@ -3,12 +3,10 @@ const app = express();
 const dev = require('dotenv').config();
 const path = require('path');
 const morgan = require('morgan');
-const mysql = require('mysql');
-const myconnectio = require('express-myconnection');
-
 
 //importando routes
-const marcasRoutes =require('./routes/marcas');
+
+//const marcasRoutes =require('./routes/marcas');
 const {urlencode} = require('express');
 
 //settings
@@ -23,23 +21,18 @@ app.set('view engine', 'ejs');
 
 //middleware
 app.use(morgan('dev'));
-
-//conexion a base de datos semillero
-app.use(myconnectio(mysql, {
-        host:process.env.HOST || "",
-        user:process.env.USER|| "",
-        password:process.env.PASSWORD|| "",
-        database: process.env.database|| "",
-    }, 'single'
-
-))
-
-app.use(express.urlencoded({
-    extended: false
-}))
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
 
 //router
-app.use('/', marcasRoutes);
+//app.use('/', marcasRoutes);
+
+app.use(require('./router/marcas'));
+app.use(require('./router/lineas'));
+app.use(require('./router/vehiculos'));
+app.use('/api/marcas',require('./router/marcas'));
+app.use('/api/lineas',require('./router/lineas'));
+app.use('/api/vehiculos',require('./router/vehiculos'));
 
 //archivo estaticos-static files
 app.use(express.static(path.join(__dirname, 'public')));
